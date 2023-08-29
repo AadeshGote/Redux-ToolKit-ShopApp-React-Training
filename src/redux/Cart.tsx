@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Table } from "react-bootstrap";
+import { Button, Container, Table } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, decrement, removeFromCart } from "./CreateSlice";
 
@@ -20,7 +20,8 @@ const Cart = () => {
 let count=0;
   return (
     <>
-      <Table striped bordered hover variant="light">
+    <Container>
+      <Table striped bordered hover variant="light" className="shadow my-2">
         <thead>
           <tr>
             <th>SL No.</th>
@@ -48,7 +49,7 @@ let count=0;
                   </td>
                   <td>{item.title}</td>
                   <td>{item.quantity}</td>
-                  <td>{item.price}</td>
+                  <td>{item.price}$</td>
                   <td>
                     <Button onClick={() => handleDelete(item.id)}>
                       DELETE
@@ -59,16 +60,17 @@ let count=0;
             );
           })}
           <tr>
-            <th colSpan={3}>
+            <th colSpan={4}>
               <h4>TOTAL PRICE</h4>
             </th>
             <th>
-              <h4>{totalPrice}</h4>
+              <h4>{totalPrice}$</h4>
             </th>
             <th></th>
           </tr>
         </tbody>
       </Table>
+      </Container>
     </>
   );
 };

@@ -5,8 +5,10 @@ import {
   createSlice,
 } from "@reduxjs/toolkit";
 import API from "./AxiosInstance";
-// import { CartItems } from "./CreateSlice";
+import { newDataType } from "./NavBar";
+import { useDispatch } from "react-redux";
 
+// const dispatch=useDispatch<any>()
 //FETCH DATA USING THUNK
 export const fetchProducts: any = createAsyncThunk("products", async () => {
   try {
@@ -17,6 +19,20 @@ export const fetchProducts: any = createAsyncThunk("products", async () => {
   }
 });
 
+export const postProducts: any = createAsyncThunk(
+  "postProducts",
+  async (newData: newDataType) => {
+    // console.log(newData);
+    try {
+      const response = await API.post("/products/add", newData);
+      response.data.id = Date.now();
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
 //TYPE CHECK
 export interface products {
   id: number;
@@ -24,12 +40,14 @@ export interface products {
   description: string;
   price: number;
   thumbnail: File;
+  category: string;
 }
 
 interface prodArr {
   products: products[];
   loading: boolean;
   error: string | undefined;
+  cat: products[];
 }
 
 //INITIAL VALUES
@@ -37,13 +55,23 @@ const initialProducts: prodArr = {
   products: [],
   loading: false,
   error: "",
+  cat: [],
 };
 
 //SLICE FUNCTON FOR API
 const CreateSlice = createSlice({
   name: "products",
   initialState: initialProducts,
-  reducers: {},
+  reducers: {
+    filter: (state, action) => {
+      console.log(action.payload);
+      if (action.payload !== "Category") {
+        state.cat = state.products.filter(
+          (item: any) => item.category === action.payload
+        );
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchProducts.pending, (state, action) => {
@@ -54,15 +82,34 @@ const CreateSlice = createSlice({
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.loading = false;
         state.products = action.payload.products;
+        state.cat = state.products;
+        console.log(state.products);
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
         state.products = [];
         state.error = action.error.message;
       });
+    builder
+      .addCase(postProducts.pending, (state, action) => {
+        state.loading = true;
+
+        state.error = "";
+      })
+      .addCase(postProducts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.products.unshift(action.payload);
+        state.cat = state.products;
+        console.log(state.products);
+      })
+      .addCase(postProducts.rejected, (state, action) => {
+        state.loading = false;
+
+        state.error = action.error.message;
+      });
   },
 });
-
+export const { filter } = CreateSlice.actions;
 export const sliceReducer = CreateSlice.reducer;
 
 //COUNTER APP
@@ -129,7 +176,14 @@ export const cartSlice = createSlice({
     },
     removeFromCart: (state, action) => {
       const id = action.payload;
-      state.items = state.items.filter((item) => item.id !== id);
+      const existingItem = state.items.find((items) => items.id === id);
+      console.log(existingItem);
+
+      if (existingItem && existingItem.quantity > 1) {
+        existingItem.quantity--;
+      } else {
+        state.items = state.items.filter((item) => item.id !== id);
+      }
     },
   },
 });
