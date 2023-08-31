@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const baseURL="https://dummyjson.com";
+const baseURL = "https://dummyjson.com";
 
-const axiosInstance=axios.create({
-    baseURL:baseURL
-})
+const axiosInstance = axios.create({
+  baseURL: baseURL,
+});
 
-export default axiosInstance
+export default axiosInstance;

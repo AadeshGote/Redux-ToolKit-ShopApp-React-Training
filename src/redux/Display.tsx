@@ -29,9 +29,9 @@ const Display = () => {
   };
 
   return (
-    <Container className="d-flex flex-wrap">
+    <Container fluid className="d-flex flex-wrap  ms-4 pt-5">
       {loading || products.length === 0
-        ? Array.from({ length: 8 }).map((_, index) => (
+        ? Array.from({ length: 30 }).map((val, index) => (
             <Card
               key={index}
               style={{ width: "18rem", height: "25rem" }}

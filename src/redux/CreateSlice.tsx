@@ -69,6 +69,8 @@ const CreateSlice = createSlice({
         state.cat = state.products.filter(
           (item: any) => item.category === action.payload
         );
+      } else {
+        state.cat = state.products;
       }
     },
   },
@@ -131,10 +133,13 @@ export const Counter = createSlice({
     decrement: (state: any) => {
       state.value -= 1;
     },
+    empty: (state) => {
+      state.value = 0;
+    },
   },
 });
 
-export const { increment, decrement } = Counter.actions;
+export const { increment, decrement, empty } = Counter.actions;
 export const counterReducer = Counter.reducer;
 
 //CART ITEMS
@@ -150,7 +155,7 @@ interface CartState {
   items: CartItem[];
 }
 
-const initialCartState: CartState = {
+export const initialCartState: CartState = {
   items: [],
 };
 
@@ -185,8 +190,11 @@ export const cartSlice = createSlice({
         state.items = state.items.filter((item) => item.id !== id);
       }
     },
+    emptyCart: (state) => {
+      state.items = initialCartState.items;
+    },
   },
 });
 
-export const { addToCart, removeFromCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, emptyCart } = cartSlice.actions;
 export const cartReducer = cartSlice.reducer;

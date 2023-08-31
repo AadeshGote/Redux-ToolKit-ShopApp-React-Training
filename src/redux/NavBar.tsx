@@ -11,8 +11,13 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { filter, postProducts } from "./CreateSlice";
-import Select from "@mui/material/Select/Select";
-import { MenuItem } from "@mui/material";
+// import Select from "@mui/material/Select/Select";
+import Badge, { BadgeProps } from "@mui/material/Badge";
+import { styled } from "@mui/material/styles";
+import IconButton from "@mui/material/IconButton";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export interface newDataType {
   thumbnail: string;
@@ -26,7 +31,13 @@ const NavBar = () => {
 
   const [show, setShow] = useState(false);
 
-  const handleClose = () => setShow(false);
+  const handleClose = () => {
+    setShow(false);
+    toast.success(" PRODUCTD ADDES SUCCESSFULLY!", {
+      position: "top-right",
+      theme: "colored",
+    });
+  };
   const handleShow = () => setShow(true);
 
   const [newData, setNewData] = useState<newDataType>({
@@ -50,33 +61,67 @@ const NavBar = () => {
     dispatch(postProducts(newData));
   };
 
-  const [category, setCategory] = useState("");
+  const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
+    "& .MuiBadge-badge": {
+      right: -3,
+      top: 13,
+      border: `2px solid ${theme.palette.background.paper}`,
+      padding: "0 4px",
+    },
+  }));
+
   return (
     <>
-      <Navbar bg="dark" data-bs-theme="dark">
-        <Container className="d-flex align-items-center justify-content-between">
-          <Navbar.Brand href="#home">
+      <Navbar id="navBar" bg="warning" style={{ height: "10%" }}>
+        <Container>
+          <Navbar.Brand>
             <h3>SHOPNOW</h3>
           </Navbar.Brand>
-          <Nav className="me-auto">
-            <Nav.Link href="#">
-              <Link to={"/"}>Home</Link>
-            </Nav.Link>
-            <Nav.Link href="#features">
-              <Link to={"/cart"}>Cart</Link>
-            </Nav.Link>
-            <Nav.Link href="">{`Cart Items:- ${count}`}</Nav.Link>
+          <Navbar.Toggle aria-controls="navbarScroll" />
+          <Navbar.Collapse id="navbarScroll">
+            <Nav
+              className="me-auto my-2 my-lg-0"
+              style={{ maxHeight: "100px" }}
+              navbarScroll
+            >
+              <Nav.Link href="/">
+                <h4>Home</h4>
+              </Nav.Link>
+              <IconButton aria-label="cart" size="medium">
+                <StyledBadge badgeContent={`${count}`} color="success">
+                  <Link to={"/cart"}>
+                    <ShoppingCartIcon />
+                  </Link>
+                </StyledBadge>
+              </IconButton>
+            </Nav>
+            <Form className="d-flex ">
+              <Form.Select
+                aria-label="Default select example"
+                style={{
+                  height: "10%",
+                  width: "50%",
+                  backgroundColor: "white",
+                  color: "black",
+                }}
+                onChange={handleCategory}
+              >
+                <option value="Category">All</option>
+                <option value="laptops">Laptops</option>
+                <option value="smartphones">Smart Phones</option>
+              </Form.Select>
 
-            <Form.Select aria-label="Default select example" style={{height:"10%",width:"30%"}} onChange={handleCategory}>
-              <option value="Category">Category</option>
-              <option value="laptops">Laptops</option>
-              <option value="smartphones">Smart Phones</option>
-            </Form.Select>
-
-            <Nav.Link>
-              <Button onClick={handleShow}>Add Item</Button>
-            </Nav.Link>
-          </Nav>
+              <Nav.Link>
+                <Button
+                  onClick={handleShow}
+                  variant="outline-primary"
+                  style={{ marginLeft: "20px" }}
+                >
+                  Add Item
+                </Button>
+              </Nav.Link>
+            </Form>
+          </Navbar.Collapse>
         </Container>
       </Navbar>
 
